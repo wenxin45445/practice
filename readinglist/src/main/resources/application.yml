@@ -1,0 +1,48 @@
+spring:
+  main:
+    banner-mode: off
+  thymeleaf:
+    cache: false
+  application:
+    name: readinglist
+#  datasource:
+#    url: jdbc:mysql://localhost/readinglist
+#    username: root
+#    password: root
+#    driver-class-name: com.mysql.jdbc.Driver
+#    driver-class-name: org.h2.Driver
+     # 下面这个属性会忽略其他属性
+#    jndi-name: java://comp/env/jdbc/readingListDS
+
+logging:
+  level:
+    root: INFO
+---
+spring:
+  profiles: develope
+logging:
+  level:
+    root: DEBUG
+
+---
+spring:
+  profiles: product
+logging:
+  level:
+    root: WARN
+  path: file:///D:/test
+  file: bookwarm.log
+
+#server:  # https的端口和证书
+#  port: 8443
+#  ssl:
+#    key-store: file:///D:/test/mykey.jks
+#    key-store-password: user
+#    key-password: user
+amazon:
+  associateId: B00HY8SIX2
+
+
+#spring.boot.admin.url: http://localhsot:8081/
+
+
