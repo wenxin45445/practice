@@ -1,0 +1,6 @@
+rootProject.name = 'springboot_mengpp'
+
+include ':eureka_server'
+include ':readinglist'
+include ':springboot_admin'
+include ':webdemo'

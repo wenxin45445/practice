@@ -1,0 +1,294 @@
+ext.root = project
+
+
+
+apply from: "buildSrc/process.gradle"
+
+allprojects {
+    apply plugin: 'maven'
+    ext.dep_versions = [
+            JETTY_VERSION      : "8.1.16.v20140903",
+            SPRING_VERSION     : "4.2.1.RELEASE",
+            SPRING_BOOT_VERSION: "1.3.8.RELEASE",
+            SPRING_VERSION_2   : "4.0.3.RELEASE",
+            MOCKITO_VERSION   : "2.2.22"
+    ]
+}
+
+subprojects {
+    buildscript {
+
+        repositories {
+            mavenLocal()
+
+            maven { url "http://192.168.0.2:8081/nexus/content/repositories/snapshots" }
+            maven { url "http://192.168.0.2:8081/nexus/content/groups/public/" }
+            maven { url "http://192.168.0.2:8081/nexus/content/repositories/share" }
+            maven { url "http://repo.maven.apache.org/maven2" }
+            maven { url "http://repo.typesafe.com/typesafe/repo" }
+        }
+
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'distribution'
+
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+
+
+    repositories {
+        mavenLocal()
+
+        maven { url "http://192.168.0.2:8081/nexus/content/repositories/snapshots" }
+        maven { url "http://192.168.0.2:8081/nexus/content/groups/public/" }
+        maven { url "http://192.168.0.2:8081/nexus/content/repositories/share" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+        maven { url "http://repo.typesafe.com/typesafe/repo" }
+    }
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+        testCompile group: 'org.mockito', name: 'mockito-core', version: '2.2.22'
+        testCompile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.9'
+        testCompile "org.hamcrest:hamcrest-all:1.3"
+    }
+
+
+    sourceSets {
+        main {
+            resources {
+                srcDir 'src/main/java'
+                include("**/*.xml")
+                include("**/*.properties")
+                include("**/*.jsp")
+                include("**/*.css")
+                include("**/*.gif")
+                include("**/*.so")
+                include("**/*.dll")
+                include("**/*.ftl")
+                include("**/*.sql")
+                include("**/*.json")
+                include("**/suspend*")
+            }
+        }
+    }
+}
+
+
+
+
+Closure init_finagle_app = {
+    dependencies {
+        compile project(':common_finagle')
+    }
+}
+
+Closure init_app = { jarName ->
+    apply plugin: 'application'
+    mainClassName = "Main"
+
+    run {
+
+
+    }
+
+    dependencies {
+        compile project(':common')
+        compile project(':common_web')
+        compile (project(':jamon'))
+        compile project(':sharecommon')
+        compile project(':common_web')
+        compile "org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127"
+        compile ("com.jamonapi:jamon:2.81") {
+            exclude group: "com.hazelcast"
+        }
+        compile "org.eclipse.jetty:jetty-webapp:${dep_versions.JETTY_VERSION}"
+        compile "com.fdsapi:fdsapi:1.2"
+        compile "org.hsqldb:hsqldb:2.3.2"
+        compile "oro:oro:2.0.8"
+        compile "xss-html-filter:xss-html-filter:1.5"
+    }
+
+    afterEvaluate {
+
+        jar {
+            manifest {
+                attributes(
+                        "Class-Path": configurations.compile.collect { "lib/" + it.getName() }.join(' '),
+                        "Main-Class": "Main"
+                )
+            }
+            archiveName = jarName + ".jar"
+
+        }
+    }
+    distTar {
+        compression = Compression.GZIP
+        extension = "tar.gz"
+        if (project.hasProperty('artifactName')) {
+            baseName = project.artifactName
+        } else {
+        }
+        archiveName = "${baseName}.${extension}"
+        destinationDir = new File(root.projectDir, "target")
+        
+    }
+
+
+    distTar << {
+        String newName = "${project.tasks.distTar.destinationDir}/${project.tasks.distTar.baseName}-${version}.tar.gz"
+
+        new File(newName).delete()
+
+        project.tasks.distTar.archivePath.renameTo(newName)
+    }
+
+
+    distributions {
+        main {
+            contents {
+
+                into("config") {
+                    from { "config" }
+                    exclude "version.properties"
+                }
+
+            
+
+                into("config") {
+                    from new File(root.projectDir, "buildSrc/version.properties")
+
+                    expand([release: [
+                            "version": version
+                    ]])
+                }
+
+                into("webapp") {
+                    from new File(projectDir, "webapp")
+                    include "*.html"
+                    include "bower_components/**"
+                    include "build/**"
+                    include "dist/**"
+
+                }
+
+                into("asset") {
+                    from("asset")
+                }
+
+                from root.project(':jamon').tasks.withType(War)
+                from root.project(':common_web').tasks.withType(War)
+                rename("(.*?)-.*(.war)", "\$1\$2")
+
+                from project.tasks.withType(Jar)
+            }
+        }
+    }
+}
+
+project(':gm_center').ext.artifactName = "gmCenter"
+project(':proxy_mgr').ext.artifactName = "proxymanage"
+project(':proxy_slv').ext.artifactName = "proxyslave"
+project(':room_proxy').ext.artifactName = "roomproxy"
+project(':scene_proxy').ext.artifactName = "sceneproxy"
+project(':db_sweeper').ext.artifactName = "dbsweeper"
+project(':automation').ext.artifactName = "automation_slv"
+
+project(':allocation', init_app.curry("game-allocation"))
+project(':applog', init_app.curry("applog"))
+project(':automation', init_app.curry("automation_slv"))
+project(':automation_mgr', init_app.curry("automation_mgr"))
+project(':bigDataCalculator', init_app.curry("bigDataCalculator"))
+project(':cdn_logger', init_app.curry("cdn_logger"))
+project(':db_sweeper', init_app.curry("game-dbsweeper"))
+project(':ebook_server', init_app.curry("ebook_server"))
+project(':gmjob', init_app.curry("gameGmJob"))
+project(':groom', init_app.curry("game-groom"))
+project(':gm_center', init_app.curry("gameGmCenter"))
+project(':logic', init_app.curry("game-logic"))
+project(':login', init_app.curry("game-login"))
+project(':idip_server', init_app.curry("game-idip_server"))
+project(':integration_test', init_app.curry("integration_test"))
+project(':lost_logger', init_app.curry("lost_logger"))
+project(':plugin_logger', init_app.curry("plugin_logger"))
+project(':proxy_mgr', init_app.curry("game-proxymanage"))
+project(':proxy_slv', init_app.curry("game-proxyslave"))
+project(':race', init_app.curry("game-race"))
+project(':report_logger', init_app.curry("report_logger"))
+project(':reset_race', init_app.curry("reset_race"))
+project(':reset_rank', init_app.curry("reset_rank"))
+project(':room_proxy', init_app.curry("game-roomproxy"))
+project(':scene_proxy', init_app.curry("game-sceneproxy"))
+project(':webcast_server', init_app.curry("webcast_server"))
+project(':room', init_app.curry("game-room"))
+project(':logstash', init_app.curry("logstash"))
+project(':rpg', init_app.curry("game-rpg"))
+project(':channel', init_app.curry("game-channel"))
+project(':rankService', init_app.curry("game-rankService"))
+project(':rpg-ethereum', init_app.curry("game-ethereum"))
+project(':gameguard_server', init_app.curry("gameguard_server"))
+
+project(':logic', init_finagle_app)
+project(':login', init_finagle_app)
+project(':applog',init_finagle_app)
+project(':gm_center', init_finagle_app)
+project(':gmjob', init_finagle_app)
+project(':plugin_logger', init_finagle_app)
+project(':automation', init_finagle_app)
+project(':rankService', init_finagle_app)
+project(':rpg-ethereum', init_finagle_app)
+
+
+Closure init_gametemplate = {
+    task copyGameTemplate << {
+        copy {
+            from root.project(":gametemplate").projectDir
+            into "config/template"
+            include "*.xml"
+
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+    }
+
+    tasks.compileJava.dependsOn(copyGameTemplate)
+}
+
+project(':room', init_gametemplate)
+project(':race', init_gametemplate)
+project(':logic', init_gametemplate)
+project(':login', init_gametemplate)
+project(':automation', init_gametemplate)
+project(':gm_center', init_gametemplate)
+project(':gmjob', init_gametemplate)
+project(':rpg', init_gametemplate)
+project(':channel', init_gametemplate)
+project(':rankService', init_gametemplate)
+project(':rpg-ethereum', init_gametemplate)
+
+Closure init_globalGametemplate = {
+    task copyGlobalGameTemplate << {
+        println root.project(":global_gametemplate").projectDir
+        copy {
+            from root.project(":global_gametemplate").projectDir
+            into("config/template")
+            include "*.xml"
+
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+    }
+
+    tasks.compileJava.dependsOn(copyGlobalGameTemplate)
+}
+
+project(':groom', init_globalGametemplate)
+
+
+project(':automation') {
+    ext.sqlDir = root.project(':gamedbauto').projectDir
+}
+
