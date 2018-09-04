@@ -1,4 +1,4 @@
-package com.example.readinglist;
+package com.meng.configuration;
 
 public class AddressBookConfiguration {
 }

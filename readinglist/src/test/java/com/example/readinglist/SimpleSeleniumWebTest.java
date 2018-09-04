@@ -14,6 +14,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.meng.readinglist.ReadingListApplication;
+
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 

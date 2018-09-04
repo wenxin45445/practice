@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.meng.configuration.AddressBookConfiguration;
+import com.meng.entity.Address;
+import com.meng.service.AddressService;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AddressBookConfiguration.class, AddressService.class})
 public class AddressServiceTest {

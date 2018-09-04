@@ -1,4 +1,4 @@
-package com.example.readinglist;
+package com.meng.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -7,6 +7,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.meng.entity.Book;
+import com.meng.entity.Reader;
+import com.meng.property.AmazonProperties;
+import com.meng.service.ReaderRepository;
+import com.meng.service.ReadingListRespository;
 
 import java.util.List;
 

@@ -1,6 +1,8 @@
-package com.example.readinglist;
+package com.meng.service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.meng.entity.Book;
 
 import java.util.List;
 

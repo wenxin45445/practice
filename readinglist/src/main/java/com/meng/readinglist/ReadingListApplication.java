@@ -1,4 +1,4 @@
-package com.example.readinglist;
+package com.meng.readinglist;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

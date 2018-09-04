@@ -1,4 +1,4 @@
-package com.example.readinglist;
+package com.meng.entity;
 
 public class Address {
     private String firstName;

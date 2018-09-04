@@ -15,6 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.meng.entity.Book;
+import com.meng.readinglist.ReadingListApplication;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ReadingListApplication.class)
 @WebAppConfiguration

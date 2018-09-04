@@ -1,5 +1,5 @@
 
-package com.example.readinglist;
+package com.meng.entity;
 
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
