@@ -10,6 +10,10 @@ buildscript {
 	}
 }
 
+repositories {
+    mavenCentral()
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
@@ -19,10 +23,6 @@ group = 'com.meng'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 
 }
@@ -31,3 +31,39 @@ dependencyManagement {
 	imports {
 	}
 }
+
+task mengpp{
+	doLast {
+		println 'this is mengpp springboot root project!'
+	}
+}
+
+task startSession << {
+	println 'startSession'
+	printNext()
+}
+
+def printNext(){
+	println 'this is next Print of startSession'
+}
+
+3.times {
+	task "timesGradle$it" << {
+		println 'Gradle rocks'
+	}
+}
+
+timesGradle0.dependsOn startSession
+timesGradle2.dependsOn timesGradle1, timesGradle0
+task groupTherapyTT(dependsOn:timesGradle2)
+
+
+
+
+
+
+
+
+
+
+
