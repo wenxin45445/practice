@@ -1,4 +1,4 @@
-rootProject.name = 'springboot_mengpp'
+rootProject.name = 'practice'
 
 include ':eureka_server'
 include ':readinglist'

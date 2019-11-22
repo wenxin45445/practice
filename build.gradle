@@ -38,7 +38,7 @@ task mengpp{
 	}
 }
 
-task startSession << {
+task startSession {
 	println 'startSession'
 	printNext()
 }
@@ -48,7 +48,7 @@ def printNext(){
 }
 
 3.times {
-	task "timesGradle$it" << {
+	task "timesGradle$it" {
 		println 'Gradle rocks'
 	}
 }
