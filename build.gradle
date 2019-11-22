@@ -1,61 +1,48 @@
+rootProject.name = 'practice'
+
 buildscript {
 	ext {
-		springBootVersion = '2.0.3.RELEASE'
+		springBootVersion = '2.1.4.RELEASE'
 	}
 	repositories {
 		mavenCentral()
 	}
 	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		/* 添加插件依赖路径（通过jar方式） */
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}" as Object)
 	}
 }
 
-repositories {
-    mavenCentral()
-}
+/* 所有子项目的通用配置 */
+subprojects {
+	/* 使用二进制插件 */
+	apply plugin: 'java' /* java是Gradle的核心插件，是内置的，内置插件不需要配置依赖路径 */
+	apply plugin: 'idea' /* 同上  让Gradle自动生成Intellij的项目文件*/
+	/* 注意gradle插件不再自动应用，所以这里需要指定 */
+	apply plugin: 'org.springframework.boot'
+	/* 依赖管理插件仍然是一个spring-boot-gradle-plugin传递依赖，所以无需在build.gradle配置中明确列出此依赖。 */
+	apply plugin: 'io.spring.dependency-management' /* 依赖管理，用来传递spring的依赖 */
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+	group = 'com.pay'
+	version = '0.0.1' /* 项目版本 */
+	/* 指定jdk版本 */
+	sourceCompatibility = '1.8'
+	/* java编译的时候缺省状态下会因为中文字符而失败 */
+	[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
-group = 'com.meng'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+	repositories {
+		mavenLocal()
+		maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+		mavenCentral()
+	}
 
-dependencies {
-
-}
-
-dependencyManagement {
-	imports {
+	/* 添加通用依赖 */
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	}
 }
 
-task mengpp{
-	doLast {
-		println 'this is mengpp springboot root project!'
-	}
-}
-
-task startSession {
-	println 'startSession'
-	printNext()
-}
-
-def printNext(){
-	println 'this is next Print of startSession'
-}
-
-3.times {
-	task "timesGradle$it" {
-		println 'Gradle rocks'
-	}
-}
-
-timesGradle0.dependsOn startSession
-timesGradle2.dependsOn timesGradle1, timesGradle0
-task groupTherapyTT(dependsOn:timesGradle2)
 
 
 
