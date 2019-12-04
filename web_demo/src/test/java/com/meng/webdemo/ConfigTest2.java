@@ -9,13 +9,13 @@ public class ConfigTest2 {
     }
 
     @Autowired
-    private ConfigTest3 configTest3;
+    private ConfigTest1 configTest1;
 
     public void print(){
         System.out.println("i am ConfigTest2");
     }
 
-    public void callConfigTest3(){
-        configTest3.print();
+    public void callConfigTest1(){
+        configTest1.print();
     }
 }

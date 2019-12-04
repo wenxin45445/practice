@@ -9,7 +9,7 @@ public class AnnotationTest {
         ConfigTest2 configTest2 = (ConfigTest2) acac.getBean("configTest2");
         ConfigTest3 configTest3 = (ConfigTest3) acac.getBean("configTest3");
         configTest1.callConfigTest2();
-        configTest2.callConfigTest3();
+        configTest2.callConfigTest1();
         configTest3.callConfigTest1();
     }
 }
